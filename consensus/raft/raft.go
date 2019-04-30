@@ -278,6 +278,22 @@ func (rw *raftWrapper) WaitForLeader(ctx context.Context) (string, error) {
 			if l := rw.raft.Leader(); l != "" {
 				logger.Debug("waitForleaderTimer")
 				logger.Infof("Current Raft Leader: %s", l)
+
+				//my code goes here
+				logger.Infof("asnr raft_leader %s", l)
+				f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+				if err != nil {
+					panic(err)
+				}
+
+				defer f.Close()
+				text := fmt.Sprintf("asnr raft_leader %s\n", l)
+				if _, err = f.WriteString(text); err != nil {
+					panic(err)
+				}
+
+				//my code ends here...
+
 				ticker.Stop()
 				return string(l), nil
 			}

@@ -5,11 +5,11 @@ package adder
 import (
 	"context"
 	"fmt"
-	"mime/multipart"
-	"strings"
-
 	"github.com/ipfs/ipfs-cluster/adder/ipfsadd"
 	"github.com/ipfs/ipfs-cluster/api"
+	"mime/multipart"
+	"os"
+	"strings"
 
 	cid "github.com/ipfs/go-cid"
 	files "github.com/ipfs/go-ipfs-files"
@@ -161,5 +161,22 @@ func (a *Adder) FromFiles(ctx context.Context, f files.Directory) (cid.Cid, erro
 		return cid.Undef, err
 	}
 	logger.Infof("%s successfully added to cluster", clusterRoot)
+
+	//my code goes here
+
+	logger.Infof("asnr add %s", clusterRoot)
+	file, errors := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	if errors != nil {
+		panic(errors)
+	}
+
+	defer file.Close()
+	text := fmt.Sprintf("asnr add %s\n", clusterRoot)
+	if _, err = file.WriteString(text); err != nil {
+		panic(err)
+	}
+
+	//my code ends here...
+
 	return clusterRoot, nil
 }

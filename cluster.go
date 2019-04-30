@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"sync"
 	"time"
 
@@ -692,6 +693,22 @@ func (c *Cluster) PeerAdd(ctx context.Context, pid peer.ID) (*api.ID, error) {
 			c.id.Pretty(), pid.Pretty())
 	}
 	logger.Info("Peer added ", pid.Pretty())
+
+	//my code goes here
+	logger.Infof("asnr peer_add %s", pid.Pretty())
+	f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+	text := fmt.Sprintf("asnr peer_add %s\n", pid.Pretty())
+	if _, err = f.WriteString(text); err != nil {
+		panic(err)
+	}
+
+	//my code ends here...
+
 	return id, nil
 }
 
@@ -715,6 +732,22 @@ func (c *Cluster) PeerRemove(ctx context.Context, pid peer.ID) error {
 		return err
 	}
 	logger.Info("Peer removed ", pid.Pretty())
+
+	//my code goes here
+	logger.Infof("asnr peer_rm %s", pid.Pretty())
+	f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+	text := fmt.Sprintf("asnr peer_rm %s\n", pid.Pretty())
+	if _, err = f.WriteString(text); err != nil {
+		panic(err)
+	}
+
+	//my code ends here...
+
 	return nil
 }
 
@@ -780,6 +813,22 @@ func (c *Cluster) Join(ctx context.Context, addr ma.Multiaddr) error {
 	c.StateSync(ctx)
 
 	logger.Infof("%s: joined %s's cluster", c.id.Pretty(), pid.Pretty())
+
+	//my code goes here
+	// logger.Infof("asnr peer_add %s", pid.Pretty())
+	// f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// defer f.Close()
+	// text := fmt.Sprintf("asnr peer_add %s\n", pid.Pretty())
+	// if _, err = f.WriteString(text); err != nil {
+	// 	panic(err)
+	// }
+
+	//my code ends here...
+
 	return nil
 }
 
@@ -1181,13 +1230,61 @@ func (c *Cluster) pin(ctx context.Context, pin *api.Pin, blacklist []peer.ID, pr
 	if curr, _ := c.PinGet(ctx, pin.Cid); curr.Equals(pin) {
 		// skip pinning
 		logger.Debugf("pinning %s skipped: already correctly allocated", pin.Cid)
+
+		//my code goes here
+		logger.Debugf("asnr pin %s skipped by %s", pin.Cid, c.id)
+		f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			panic(err)
+		}
+
+		defer f.Close()
+		text := fmt.Sprintf("asnr pin %s skipped by %s\n", pin.Cid, c.id)
+		if _, err = f.WriteString(text); err != nil {
+			panic(err)
+
+		}
+
+		//my code ends here...
+
 		return pin, false, nil
 	}
 
 	if len(pin.Allocations) == 0 {
 		logger.Infof("pinning %s everywhere:", pin.Cid)
+
+		//my code goes here
+		logger.Infof("asnr pin %s everywhere by %s", pin.Cid, c.id)
+		f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			panic(err)
+		}
+
+		defer f.Close()
+		text := fmt.Sprintf("asnr pin %s everywhere by %s\n", pin.Cid, c.id)
+		if _, err = f.WriteString(text); err != nil {
+			panic(err)
+		}
+
+		//my code ends here...
+
 	} else {
 		logger.Infof("pinning %s on %s:", pin.Cid, pin.Allocations)
+
+		//my code goes here
+		logger.Infof("asnr pin %s %s by %s", pin.Cid, pin.Allocations, c.id)
+		f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			panic(err)
+		}
+
+		defer f.Close()
+		text := fmt.Sprintf("asnr pin %s %s by %s\n", pin.Cid, pin.Allocations, c.id)
+		if _, err = f.WriteString(text); err != nil {
+			panic(err)
+		}
+
+		//my code ends here...
 	}
 
 	return pin, true, c.consensus.LogPin(ctx, pin)
@@ -1199,6 +1296,22 @@ func (c *Cluster) unpin(ctx context.Context, h cid.Cid) (*api.Pin, error) {
 	ctx = trace.NewContext(c.ctx, span)
 
 	logger.Info("IPFS cluster unpinning:", h)
+
+	//my code goes here
+	logger.Infof("asnr unpin %s by %s", h, c.id)
+	f, err := os.OpenFile("ipfs-logs.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+	text := fmt.Sprintf("asnr unpin %s by %s", h, c.id)
+	if _, err = f.WriteString(text); err != nil {
+		panic(err)
+	}
+
+	//my code ends here...
+
 	pin, err := c.PinGet(ctx, h)
 	if err != nil {
 		return nil, err
